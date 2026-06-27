@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EstiMate — Contractor Edition</title>
+<style>
+  :root{
+    --green-deep:#06231a;--green:#1faa59;--green-bright:#36d07d;
+    --green-glass:rgba(54,208,125,.14);
+    --ink:#000000;--paper:#ffffff;--muted:#b8b8bd;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    background:var(--ink);color:var(--paper);-webkit-font-smoothing:antialiased;line-height:1.5}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 clamp(20px,5vw,48px)}
+
+  .house{width:38px;height:38px;flex:none}
+  .house svg{width:100%;height:100%;overflow:visible}
+  .house .frame{fill:none;stroke:var(--green-bright);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+  .house .grid{fill:none;stroke:var(--green-bright);stroke-width:1;opacity:.5}
+  .house .door{fill:none;stroke:var(--green-bright);stroke-width:1.8}
+  .house svg{animation:glow 2.8s ease-in-out infinite}
+  @keyframes glow{0%,100%{filter:drop-shadow(0 0 2px var(--green-bright))}
+    50%{filter:drop-shadow(0 0 8px var(--green-bright)) drop-shadow(0 0 16px var(--green))}}
+
+  header{position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);
+    background:rgba(0,0,0,.82);border-bottom:1px solid rgba(54,208,125,.16)}
+  nav{display:flex;align-items:center;gap:28px;height:70px}
+  .brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:18px;letter-spacing:-.01em}
+  .brand .ed{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--green-bright);
+    font-weight:700;display:block;line-height:1.1;margin-top:2px}
+  .brand .lock{display:flex;flex-direction:column}
+  .brand .lock .nm span:first-child{color:#fff}
+  .brand .lock .nm span:last-child{color:var(--green-bright)}
+  .navlinks{display:flex;gap:24px;margin-left:auto;font-size:14.5px;font-weight:500;align-items:center}
+  .navlinks a{opacity:.82;transition:opacity .2s,color .2s}
+  .navlinks a:hover{opacity:1;color:var(--green-bright)}
+  .nav-cta:hover{color:#04130c;filter:brightness(1.08)}
+  .nav-cta{background:var(--green-bright);color:#04130c;padding:10px 18px;border-radius:999px;
+    font-weight:700;font-size:14px}
+  .burger{display:none;margin-left:auto;background:none;border:none;color:var(--paper);font-size:24px;cursor:pointer}
+
+  .hero{position:relative;padding:clamp(56px,9vw,110px) 0 clamp(40px,6vw,72px);overflow:hidden}
+  .hero::before{content:"";position:absolute;inset:0;z-index:-1;background:none}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(32px,5vw,64px);align-items:center}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:12.5px;letter-spacing:.16em;
+    text-transform:uppercase;font-weight:700;color:var(--green-bright);margin-bottom:22px;
+    background:var(--green-glass);padding:8px 15px;border-radius:999px}
+  h1{font-size:clamp(36px,5.6vw,62px);line-height:1.02;font-weight:800;letter-spacing:-.025em;margin-bottom:22px}
+  h1 .hl{color:var(--green-bright)}
+  .lead{font-size:clamp(16px,1.9vw,20px);color:#ffffff;max-width:48ch;margin-bottom:18px}
+  .subnote{font-size:14.5px;color:var(--muted);margin-bottom:32px;display:flex;gap:18px;flex-wrap:wrap}
+  .subnote span{display:flex;align-items:center;gap:7px}
+  .subnote .tick{color:var(--green-bright);font-weight:800}
+  .btns{display:flex;gap:14px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:10px;padding:15px 26px;border-radius:999px;
+    font-weight:700;font-size:15.5px;cursor:pointer;border:none;transition:transform .15s,box-shadow .25s}
+  .btn:active{transform:scale(.97)}
+  .btn-primary{background:var(--green-bright);color:#04130c;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+  .btn-primary:hover{box-shadow:0 4px 14px rgba(0,0,0,.45);filter:brightness(1.05)}
+  .btn-ghost{background:transparent;color:var(--paper);border:1.5px solid rgba(54,208,125,.4)}
+  .btn-ghost:hover{border-color:var(--green-bright);background:var(--green-glass)}
+  .btn .ar{transition:transform .2s}.btn:hover .ar{transform:translateX(4px)}
+
+  /* sample bid graphic */
+  .bid{background:linear-gradient(180deg,#0a2a1e,#06231a);border-radius:20px;
+    padding:24px;box-shadow:0 30px 70px -20px rgba(0,0,0,.7);border:1px solid rgba(54,208,125,.3);
+    transform:rotate(-1.2deg);transition:transform .4s}
+  .bid:hover{transform:rotate(0)}
+  .bid-top{display:flex;justify-content:space-between;align-items:flex-start;
+    padding-bottom:16px;border-bottom:1px solid rgba(54,208,125,.18);margin-bottom:16px}
+  .bid-top .co{font-size:17px;font-weight:800}
+  .bid-top .co span{display:block;font-size:11.5px;color:var(--muted);font-weight:500;letter-spacing:.04em;margin-top:3px}
+  .bid-top .badge{background:var(--green-glass);color:var(--green-bright);font-size:11px;font-weight:800;
+    padding:6px 12px;border-radius:999px;border:1px solid rgba(54,208,125,.4)}
+  .bid-meta{display:flex;gap:20px;font-size:12px;color:var(--muted);margin-bottom:16px}
+  .bid-meta b{color:var(--paper);font-weight:700}
+  .lines .ln{display:flex;justify-content:space-between;align-items:center;padding:10px 0;
+    border-bottom:1px solid rgba(54,208,125,.1);font-size:14px}
+  .lines .ln .d{display:flex;flex-direction:column}
+  .lines .ln .d small{color:var(--muted);font-size:11.5px;margin-top:2px}
+  .lines .ln .v{font-weight:700;font-variant-numeric:tabular-nums}
+  .bid-sum{margin-top:16px;display:flex;flex-direction:column;gap:8px}
+  .bid-sum .r{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
+  .bid-sum .r b{color:var(--paper)}
+  .bid-total{display:flex;justify-content:space-between;align-items:center;margin-top:12px;
+    background:var(--green-bright);color:#04130c;padding:14px 18px;border-radius:12px}
+  .bid-total .t{font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
+  .bid-total .v{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums}
+
+  section.block{padding:clamp(48px,7vw,90px) 0;border-top:1px solid rgba(54,208,125,.12)}
+  .sec-eyebrow{font-size:12.5px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;
+    color:var(--green-bright);margin-bottom:14px}
+  .sec-h{font-size:clamp(28px,4vw,42px);font-weight:800;letter-spacing:-.02em;margin-bottom:16px;max-width:20ch}
+  .sec-lead{color:#ffffff;max-width:54ch;margin-bottom:42px;font-size:17px}
+
+  .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .card{background:rgba(255,255,255,.03);border:1px solid rgba(54,208,125,.16);border-radius:16px;
+    padding:26px;transition:transform .25s,border-color .25s,background .25s}
+  .card:hover{transform:translateY(-4px);border-color:var(--green-bright);background:rgba(255,255,255,.055)}
+  .card .ci{width:46px;height:46px;border-radius:12px;background:var(--green-glass);
+    display:grid;place-items:center;font-size:22px;margin-bottom:16px}
+  .card h3{font-size:18px;font-weight:700;margin-bottom:8px}
+  .card p{font-size:14.5px;color:var(--muted)}
+
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .step{position:relative;padding-top:18px}
+  .step .num{font-size:13px;font-weight:800;color:var(--green-bright);letter-spacing:.1em;margin-bottom:12px}
+  .step .bar{height:3px;background:linear-gradient(90deg,var(--green-bright),transparent);border-radius:2px;margin-bottom:18px}
+  .step h3{font-size:19px;font-weight:700;margin-bottom:9px}
+  .step p{font-size:14.5px;color:var(--muted)}
+
+  .tut-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+  .tut{display:flex;gap:16px;align-items:center;background:rgba(255,255,255,.03);
+    border:1px solid rgba(54,208,125,.16);border-radius:14px;padding:18px 20px;cursor:pointer;
+    transition:border-color .2s,background .2s}
+  .tut:hover{border-color:var(--green-bright);background:rgba(255,255,255,.055)}
+  .tut .play{width:44px;height:44px;border-radius:50%;background:var(--green-bright);color:#04130c;
+    display:grid;place-items:center;font-size:16px;flex:none}
+  .tut .meta h4{font-size:15.5px;font-weight:700;margin-bottom:3px}
+  .tut .meta span{font-size:13px;color:var(--muted)}
+
+  /* pricing */
+  .price-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;max-width:740px}
+  .plan{background:rgba(255,255,255,.03);border:1px solid rgba(54,208,125,.18);border-radius:18px;padding:30px;position:relative}
+  .plan.best{border-color:var(--green-bright);background:rgba(54,208,125,.1)}
+  .plan .pill{position:absolute;top:-12px;right:24px;background:var(--green-bright);color:#04130c;
+    font-size:11px;font-weight:800;padding:5px 12px;border-radius:999px;letter-spacing:.04em}
+  .plan h3{font-size:15px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px}
+  .plan .amt{font-size:44px;font-weight:800;letter-spacing:-.02em}
+  .plan .amt small{font-size:16px;font-weight:600;color:var(--muted)}
+  .plan .note{font-size:14px;color:var(--muted);margin:10px 0 22px}
+  .plan .btn{width:100%;justify-content:center}
+
+  .final{text-align:center;padding:clamp(56px,8vw,100px) 0}
+  .final h2{font-size:clamp(30px,4.5vw,48px);font-weight:800;letter-spacing:-.02em;margin-bottom:18px}
+  .final p{color:#ffffff;max-width:46ch;margin:0 auto 32px;font-size:17px}
+  .final .btns{justify-content:center}
+
+  footer{border-top:1px solid rgba(54,208,125,.14);padding:30px 0;font-size:13.5px;color:var(--muted)}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px}
+  footer a:hover{color:var(--green-bright)}
+
+  @media(max-width:880px){
+    .hero-grid{grid-template-columns:1fr;gap:40px}
+    .feat-grid,.steps{grid-template-columns:1fr}
+    .tut-grid,.price-grid{grid-template-columns:1fr}
+    .navlinks{display:none}.burger{display:block}
+    .navlinks.open{display:flex;position:absolute;top:70px;left:0;right:0;flex-direction:column;
+      background:rgba(0,0,0,.97);padding:20px 24px;gap:18px;margin:0;border-bottom:1px solid rgba(54,208,125,.16)}
+  }
+  @media(prefers-reduced-motion:reduce){.house svg{animation:none}}
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="wrap">
+    <a class="brand" href="estimate-landing.html">
+      <span class="house"><svg viewBox="0 0 64 64"><path class="frame" d="M8 28 L32 9 L56 28"/><path class="frame" d="M14 24 L14 54 L50 54 L50 24"/><line class="grid" x1="14" y1="34" x2="50" y2="34"/><line class="grid" x1="14" y1="44" x2="50" y2="44"/><line class="grid" x1="26" y1="24" x2="26" y2="54"/><line class="grid" x1="38" y1="24" x2="38" y2="54"/><path class="door" d="M29 54 L29 44 L37 44 L37 54"/></svg></span>
+      <span class="lock">
+        <span class="nm"><span>Esti</span><span>Mate</span></span>
+        <span class="ed">Contractor Edition</span>
+      </span>
+    </a>
+    <button class="burger" aria-label="Menu" onclick="document.getElementById('nl').classList.toggle('open')">☰</button>
+    <div class="navlinks" id="nl">
+      <a href="#features">Features</a>
+      <a href="#how">How it works</a>
+      <a href="#tutorials">Instructions & Tutorials</a>
+      <a href="#pricing">Pricing</a>
+      <a class="nav-cta" href="#launch">Launch App</a>
+    </div>
+  </nav>
+</header>
+
+<div class="hero wrap">
+  <div class="hero-grid">
+    <div>
+      <span class="eyebrow">Built for estimating teams & contractors</span>
+      <h1>Win every bid. <span class="hl">Run tighter projects.</span></h1>
+      <p class="lead">EstiMate gives your estimating team the precision tools to build faster quotes, track real costs, and submit winning proposals — on every project, every time.</p>
+      <div class="subnote">
+        <span><span class="tick">✓</span>Real-time local pricing by ZIP or GPS</span>
+        <span><span class="tick">✓</span>CRM, chat & binding contracts built in</span>
+      </div>
+      <div class="btns">
+        <a class="btn btn-primary" href="#launch">Launch App <span class="ar">→</span></a>
+        <a class="btn btn-ghost" href="#features">See features</a>
+      </div>
+    </div>
+
+    <!-- Sample bid graphic -->
+    <div class="bid" aria-label="Sample contractor bid">
+      <div class="bid-top">
+        <div class="co">Summit Builders LLC<span>Bid #2041 · Kitchen Renovation</span></div>
+        <div class="badge">READY TO SEND</div>
+      </div>
+      <div class="bid-meta"><span>ZIP <b>90210</b></span><span>Radius <b>10 mi</b></span><span>Vendors <b>7 avg</b></span></div>
+      <div class="lines">
+        <div class="ln"><div class="d">Framing & drywall<small>Materials + labor</small></div><div class="v">$6,420</div></div>
+        <div class="ln"><div class="d">Electrical rough-in<small>Materials + labor</small></div><div class="v">$3,180</div></div>
+        <div class="ln"><div class="d">Cabinetry & counters<small>Materials</small></div><div class="v">$9,750</div></div>
+        <div class="ln"><div class="d">Plumbing<small>Materials + labor</small></div><div class="v">$2,540</div></div>
+      </div>
+      <div class="bid-sum">
+        <div class="r"><span>Subtotal</span><b>$21,890</b></div>
+        <div class="r"><span>Overhead & margin (18%)</span><b>$3,940</b></div>
+      </div>
+      <div class="bid-total"><span class="t">Total bid</span><span class="v">$25,830</span></div>
+    </div>
+  </div>
+</div>
+
+<section class="block wrap" id="features">
+  <div class="sec-eyebrow">Features</div>
+  <h2 class="sec-h">The estimating toolkit that closes deals.</h2>
+  <p class="sec-lead">From the first site visit to the signed contract, EstiMate keeps your numbers accurate and your pipeline moving.</p>
+  <div class="feat-grid">
+    <div class="card"><div class="ci">📍</div><h3>Bid on the spot</h3><p>Enter a ZIP or use GPS to pull live local material costs and generate a bid before you leave the driveway.</p></div>
+    <div class="card"><div class="ci">📊</div><h3>Real local pricing</h3><p>Averages costs across nearby vendors within 1–100 miles, so every quote reflects your actual market.</p></div>
+    <div class="card"><div class="ci">👷</div><h3>Materials + labor</h3><p>Layer accurate labor onto material costs for a complete number you can stand behind.</p></div>
+    <div class="card"><div class="ci">🗂️</div><h3>Built-in CRM & chat</h3><p>Talk to clients in-app, track every lead with a pending-status pipeline, and never lose a follow-up.</p></div>
+    <div class="card"><div class="ci">📝</div><h3>Binding contracts</h3><p>Turn an approved bid into a legal contract and export to PDF, Word, Excel, email, or text.</p></div>
+    <div class="card"><div class="ci">📤</div><h3>Export everywhere</h3><p>Send communications and bid documents straight to your tax software and accounting tools.</p></div>
+  </div>
+</section>
+
+<section class="block wrap" id="how">
+  <div class="sec-eyebrow">How it works</div>
+  <h2 class="sec-h">From site visit to signed bid in three steps.</h2>
+  <div class="steps">
+    <div class="step"><div class="num">STEP 01</div><div class="bar"></div><h3>Set location & scope</h3><p>Drop a ZIP or GPS pin, set your radius, and pick the phase of construction you're bidding.</p></div>
+    <div class="step"><div class="num">STEP 02</div><div class="bar"></div><h3>Build the number</h3><p>EstiMate averages live local material costs and adds labor to produce a defensible bid in minutes.</p></div>
+    <div class="step"><div class="num">STEP 03</div><div class="bar"></div><h3>Send & close</h3><p>Convert the bid into a contract, send it through the app, and track the client to signed.</p></div>
+  </div>
+</section>
+
+<section class="block wrap" id="tutorials">
+  <div class="sec-eyebrow">Instructions & Tutorials</div>
+  <h2 class="sec-h">Get your team up to speed fast.</h2>
+  <p class="sec-lead">Practical walkthroughs for every part of the estimating and bidding workflow.</p>
+  <div class="tut-grid">
+    <div class="tut"><div class="play">▶</div><div class="meta"><h4>Creating your first bid</h4><span>4 min · Getting started</span></div></div>
+    <div class="tut"><div class="play">▶</div><div class="meta"><h4>Setting pricing radius & vendors</h4><span>3 min · Accuracy</span></div></div>
+    <div class="tut"><div class="play">▶</div><div class="meta"><h4>Managing clients in the CRM</h4><span>5 min · Pipeline</span></div></div>
+    <div class="tut"><div class="play">▶</div><div class="meta"><h4>Bid to binding contract</h4><span>4 min · Closing</span></div></div>
+  </div>
+</section>
+
+<section class="block wrap" id="pricing">
+  <div class="sec-eyebrow">Pricing</div>
+  <h2 class="sec-h">One plan. Every tool. No surprises.</h2>
+  <div class="price-grid">
+    <div class="plan">
+      <h3>Monthly</h3>
+      <div class="amt">$9.99<small>/mo</small></div>
+      <div class="note">Full access, billed month to month. Cancel anytime.</div>
+      <a class="btn btn-ghost" href="#launch">Start monthly</a>
+    </div>
+    <div class="plan best">
+      <div class="pill">SAVE 50%</div>
+      <h3>Annual</h3>
+      <div class="amt">$49.99<small>/yr</small></div>
+      <div class="note">Half off versus monthly — that's about $4.17/mo.</div>
+      <a class="btn btn-primary" href="#launch">Get the annual deal <span class="ar">→</span></a>
+    </div>
+  </div>
+</section>
+
+<section class="final wrap" id="launch">
+  <h2>Stop guessing. Start winning bids.</h2>
+  <p>Build faster, more accurate quotes and submit winning proposals on every project.</p>
+  <div class="btns">
+    <a class="btn btn-primary" href="#">Launch App <span class="ar">→</span></a>
+    <a class="btn btn-ghost" href="#features">See features</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© EstiMate — Contractor Edition</span>
+    <span><a href="estimate-landing.html">← Switch mode</a></span>
+  </div>
+</footer>
+
+</body>
+</html>
