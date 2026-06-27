@@ -192,7 +192,7 @@
         <li><span class="chk">✓</span>Built-in CRM, chat & client pipeline</li>
         <li><span class="chk">✓</span>Binding contracts, export to PDF, Word & Excel</li>
       </ul>
-      <a class="cta" href="https://estimate-224316748409.us-central1.run.app/?target=contractors&amp;mode=contractor">Enter Contractor Mode <span class="arrow">→</span></a>
+      <a class="cta" href="contractor.html">Enter Contractor Mode <span class="arrow">→</span></a>
     </div>
   </section>
 
@@ -216,7 +216,7 @@
         <li><span class="chk">✓</span>Real-time materials cost for your job</li>
         <li><span class="chk">✓</span>Save every estimate, project by project</li>
       </ul>
-      <a class="cta" href="https://estimate-224316748409.us-central1.run.app/?target=homeowners&amp;mode=homeowner">Enter Homeowner Mode <span class="arrow">→</span></a>
+      <a class="cta" href="homeowner.html">Enter Homeowner Mode <span class="arrow">→</span></a>
     </div>
   </section>
 
@@ -274,8 +274,8 @@
     if(committed) return;
     committed = side;
     const dest = side === 'contractor'
-      ? 'https://estimate-224316748409.us-central1.run.app/?target=contractors&mode=contractor'
-      : 'https://estimate-224316748409.us-central1.run.app/?target=homeowners&mode=homeowner';
+      ? 'contractor.html'
+      : 'homeowner.html';
     const note = document.querySelector('.hint');
     note.textContent = side === 'contractor'
       ? 'Contractor Mode selected — opening…'
