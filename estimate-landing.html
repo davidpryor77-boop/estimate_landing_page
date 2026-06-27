@@ -231,7 +231,7 @@
     </div>
   </div>
 
-  <div class="hint">Drag the tab left for Contractors · right for DIY &amp; Homeowners</div>
+  <div class="hint">Hold left 3s for Homeowners · hold right 3s for Contractors</div>
   <div class="copyright">© 2026 EstiMate</div>
 </div>
 
@@ -241,6 +241,8 @@
   const handle = document.getElementById('handle');
   const grip   = document.getElementById('grip');
   let split = 50, dragging = false;
+  let holdTimer = null;
+  let holdTarget = null;
 
   const clamp = v => Math.max(4, Math.min(96, v));
   function setSplit(v, animate){
@@ -257,16 +259,45 @@
     const x = (e.touches ? e.touches[0].clientX : e.clientX);
     return (x / window.innerWidth) * 100;
   }
+
+  function clearHoldTimer(){
+    if (holdTimer) {
+      clearTimeout(holdTimer);
+      holdTimer = null;
+    }
+    holdTarget = null;
+  }
+
+  function scheduleHoldCommit(target){
+    if (committed) return;
+    if (holdTarget === target) return;
+    clearHoldTimer();
+    holdTarget = target;
+    holdTimer = setTimeout(() => {
+      commit(target);
+    }, 3000);
+  }
+
   function start(e){ dragging = true; stage.classList.add('dragging');
-    handle.classList.remove('snapping'); e.preventDefault(); }
-  function move(e){ if(!dragging) return; setSplit(pointer(e), false); }
+    handle.classList.remove('snapping'); clearHoldTimer(); e.preventDefault(); }
+  function move(e){
+    if(!dragging || committed) return;
+    setSplit(pointer(e), false);
+
+    // Left edge held for 3s => Homeowners. Right edge held for 3s => Contractors.
+    if (split <= 6) {
+      scheduleHoldCommit('homeowner');
+    } else if (split >= 94) {
+      scheduleHoldCommit('contractor');
+    } else {
+      clearHoldTimer();
+    }
+  }
   function end(){
     if(!dragging) return;
     dragging = false; stage.classList.remove('dragging');
-    // Snap toward whichever side you leaned into, then commit on a decisive throw
-    if(split < 22){ setSplit(8, true);  commit('contractor'); }
-    else if(split > 78){ setSplit(92, true); commit('homeowner'); }
-    else { setSplit(50, true); } // not decisive — return to center
+    clearHoldTimer();
+    if(!committed){ setSplit(50, true); } // only edge-hold triggers auto-selection
   }
 
   let committed = null;
@@ -279,7 +310,7 @@
     const note = document.querySelector('.hint');
     note.textContent = side === 'contractor'
       ? 'Contractor Mode selected — opening…'
-      : 'Homeowner / DIY Mode selected — opening…';
+      : 'Homeowner Mode selected — opening…';
     setTimeout(()=>{ window.location.href = dest; }, 520);
   }
 
@@ -295,7 +326,7 @@
     if(e.key==='ArrowLeft'){ setSplit(split-6, true); e.preventDefault(); }
     if(e.key==='ArrowRight'){ setSplit(split+6, true); e.preventDefault(); }
     if(e.key==='Enter' || e.key===' '){
-      if(split<=50) commit('contractor'); else commit('homeowner'); e.preventDefault();
+      if(split<=50) commit('homeowner'); else commit('contractor'); e.preventDefault();
     }
   });
 
