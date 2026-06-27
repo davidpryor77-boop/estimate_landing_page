@@ -192,7 +192,7 @@
         <li><span class="chk">✓</span>Built-in CRM, chat & client pipeline</li>
         <li><span class="chk">✓</span>Binding contracts, export to PDF, Word & Excel</li>
       </ul>
-      <a class="cta" href="contractor.html">Enter Contractor Mode <span class="arrow">→</span></a>
+      <a class="cta" href="/?target=contractors&amp;mode=contractor">Enter Contractor Mode <span class="arrow">→</span></a>
     </div>
   </section>
 
@@ -216,7 +216,7 @@
         <li><span class="chk">✓</span>Real-time materials cost for your job</li>
         <li><span class="chk">✓</span>Save every estimate, project by project</li>
       </ul>
-      <a class="cta" href="homeowner.html">Enter Homeowner Mode <span class="arrow">→</span></a>
+      <a class="cta" href="/?target=homeowners&amp;mode=homeowner">Enter Homeowner Mode <span class="arrow">→</span></a>
     </div>
   </section>
 
@@ -273,7 +273,9 @@
   function commit(side){
     if(committed) return;
     committed = side;
-    const dest = side === 'contractor' ? 'contractor.html' : 'homeowner.html';
+    const dest = side === 'contractor'
+      ? '/?target=contractors&mode=contractor'
+      : '/?target=homeowners&mode=homeowner';
     const note = document.querySelector('.hint');
     note.textContent = side === 'contractor'
       ? 'Contractor Mode selected — opening…'
